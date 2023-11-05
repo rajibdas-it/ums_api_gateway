@@ -1,4 +1,4 @@
-import { AcademicSemester } from '@prisma/client';
+import { AcademicSemester, Prisma } from '@prisma/client';
 import calculatePagination from '../../../helper/calculatePagination';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
@@ -19,7 +19,7 @@ const getAllAcademicSemester = async (
   filters: IFilters,
   options: IPaginationOptions,
 ): Promise<IGenericResponse<AcademicSemester[]>> => {
-  const { searchTerm } = filters;
+  const { searchTerm, ...fitersData } = filters;
   const andCondition = [];
 
   if (searchTerm) {
@@ -33,9 +33,18 @@ const getAllAcademicSemester = async (
     });
   }
 
+  if (fitersData && Object.keys(fitersData).length > 0) {
+    andCondition.push({
+      AND: Object.entries(fitersData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
   const { page, limit, skip, sortBy, sortOrder } = calculatePagination(options);
   // Prisma.$AcademicSemesterPayload;
-  const whereCondition = andCondition.length > 0 ? { AND: andCondition } : {};
+  const whereCondition: Prisma.AcademicSemesterWhereInput =
+    andCondition.length > 0 ? { AND: andCondition } : {};
 
   const result = await prisma.academicSemester.findMany({
     take: limit,
@@ -45,7 +54,9 @@ const getAllAcademicSemester = async (
     orderBy:
       sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: 'desc' },
   });
-  const total = await prisma.academicSemester.count();
+  const total = await prisma.academicSemester.count({
+    where: whereCondition,
+  });
   return {
     meta: {
       page,
@@ -56,7 +67,19 @@ const getAllAcademicSemester = async (
   };
 };
 
+const getSingleAcademicSemester = async (
+  id: string,
+): Promise<AcademicSemester | null> => {
+  const result = await prisma.academicSemester.findUnique({
+    where: {
+      id,
+    },
+  });
+  return result;
+};
+
 export const academicSemesterService = {
   createAcademicSemester,
   getAllAcademicSemester,
+  getSingleAcademicSemester,
 };
