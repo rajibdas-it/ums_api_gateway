@@ -26,7 +26,7 @@ model AcademicSemester {
 
 model AcademicFaculty {
   id                  String               @id @default(uuid())
-  title               String
+  title               String               @unique
   academicDepartments AcademicDepartment[]
   students            Student[]
   faculties           Faculty[]
@@ -38,7 +38,7 @@ model AcademicFaculty {
 
 model AcademicDepartment {
   id                String          @id @default(uuid())
-  title             String
+  title             String          @unique
   academicFacultyId String
   academicFaculty   AcademicFaculty @relation(fields: [academicFacultyId], references: [id])
   students          Student[]
@@ -51,7 +51,7 @@ model AcademicDepartment {
 
 model Student {
   id                   String             @id @default(uuid())
-  studentId            String
+  studentId            String             @unique
   firstName            String
   middleName           String
   lastName             String
@@ -74,6 +74,7 @@ model Student {
 
 model Faculty {
   id                   String             @id @default(uuid())
+  facultyId            String             @unique
   firstName            String
   middleName           String?
   lastName             String
