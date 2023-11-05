@@ -11,7 +11,17 @@ const createAcademicSemesterZodSchema = z.object({
     endMonth: z.string({ required_error: 'semester end month is required' }),
   }),
 });
+const updateAcademicSemesterZodSchema = z.object({
+  body: z.object({
+    title: z.string().optional(),
+    year: z.string().optional(),
+    code: z.string().optional(),
+    startMonth: z.string().optional(),
+    endMonth: z.string().optional(),
+  }),
+});
 
 export const academicSemesterValidation = {
   createAcademicSemesterZodSchema,
+  updateAcademicSemesterZodSchema,
 };
