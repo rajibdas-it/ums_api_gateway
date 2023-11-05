@@ -5,36 +5,50 @@ import { errorLogger, infoLogger } from './shared/logger';
 
 let server: Server;
 
-process.on('uncaughtException', error => {
-  errorLogger.error('uncaught exception is dectected', error);
-  process.exit(1);
-});
+// process.on('uncaughtException', error => {
+//   errorLogger.error('uncaught exception is dectected', error);
+//   process.exit(1);
+// });
 
 async function dbConnect() {
-  try {
-    server = app.listen(config.port, () => {
-      infoLogger.info('Server Running On Port', config.port);
-    });
-  } catch (error) {
-    errorLogger.error('Failed To Connect Database');
-  }
+  server = app.listen(config.port, () => {
+    infoLogger.info(`Server Running On Port ${config.port}`);
+  });
 
-  process.on('unhandledRejection', error => {
+  const exitHandler = () => {
     if (server) {
       server.close(() => {
-        errorLogger.error(error);
+        infoLogger.info('server close');
         process.exit(1);
       });
-    } else {
-      process.exit(1);
+    }
+    process.exit(1);
+  };
+
+  const unexprectedErrorHandler = (error: unknown) => {
+    errorLogger.error(error);
+    exitHandler();
+  };
+
+  process.on('uncaughtException', unexprectedErrorHandler);
+  process.on('unhandledRejection', unexprectedErrorHandler);
+
+  process.on('SIGTERM', () => {
+    infoLogger.info('Sigterm is received');
+    if (server) {
+      server.close();
     }
   });
+
+  // process.on('unhandledRejection', error => {
+  //   if (server) {
+  //     server.close(() => {
+  //       errorLogger.error(error);
+  //       process.exit(1);
+  //     });
+  //   } else {
+  //     process.exit(1);
+  //   }
+  // });
 }
 dbConnect();
-
-process.on('SIGTERM', () => {
-  infoLogger.info('Sigterm is received');
-  if (server) {
-    server.close();
-  }
-});
