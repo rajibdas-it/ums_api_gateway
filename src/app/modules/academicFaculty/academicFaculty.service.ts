@@ -20,7 +20,7 @@ const createAcademicFaculty = async (
   return result;
 };
 
-const GetAllAcademicFaculty = async (
+const getAllAcademicFaculty = async (
   options: IPaginationOptions,
   filters: IFiltersAcademyFaculty,
 ) => {
@@ -70,7 +70,17 @@ const GetAllAcademicFaculty = async (
   };
 };
 
+const getSingleAcademicFaculty = async (
+  id: string,
+): Promise<AcademicFaculty | null> => {
+  const result = await prisma.academicFaculty.findUnique({
+    where: { id },
+  });
+  return result;
+};
+
 export const academicFacultyService = {
   createAcademicFaculty,
-  GetAllAcademicFaculty,
+  getAllAcademicFaculty,
+  getSingleAcademicFaculty,
 };
