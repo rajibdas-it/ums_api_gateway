@@ -1,5 +1,4 @@
 import { Server } from 'http';
-import mongoose from 'mongoose';
 import app from './app';
 import { config } from './config';
 import { errorLogger, infoLogger } from './shared/logger';
@@ -13,8 +12,6 @@ process.on('uncaughtException', error => {
 
 async function dbConnect() {
   try {
-    await mongoose.connect(config.database_url as string);
-    infoLogger.info('Database Connected');
     server = app.listen(config.port, () => {
       infoLogger.info('Server Running On Port', config.port);
     });
