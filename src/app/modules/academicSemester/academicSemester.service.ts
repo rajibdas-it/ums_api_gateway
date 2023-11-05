@@ -19,9 +19,8 @@ const getAllAcademicSemester = async (
   filters: IFilters,
   options: IPaginationOptions,
 ): Promise<IGenericResponse<AcademicSemester[]>> => {
-  const { searchTerm, ...filtersData } = filters;
+  const { searchTerm } = filters;
   const andCondition = [];
-  console.log(filtersData);
 
   if (searchTerm) {
     andCondition.push({
