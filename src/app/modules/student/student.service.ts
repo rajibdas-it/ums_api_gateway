@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Prisma, Student } from '@prisma/client';
 import calculatePagination from '../../../helper/calculatePagination';
 import { IGenericResponse } from '../../../interfaces/common';
@@ -8,15 +9,17 @@ import { studentSearchableFields } from './student.constant';
 import { IStudentFilters } from './student.interface';
 
 const createStudent = async (data: Student): Promise<Student> => {
-  const academicSemester = await prisma.academicSemester.findUnique({
+  const academicSemester = await prisma.academicSemester.findFirst({
     where: { id: data.academicSemesterId },
   });
-  data.studentId = await generateId.generateStudentId(academicSemester);
+  const newId = await generateId.generateStudentId(academicSemester);
 
-  const result = await prisma.student.create({
+  data.studentId = newId;
+
+  const newStudent = await prisma.student.create({
     data,
   });
-  return result;
+  return newStudent;
 };
 
 const getAllStudents = async (

@@ -7,7 +7,9 @@ import { studentFilterableFields } from './student.constant';
 import { studentService } from './student.service';
 
 const createStudent = catchAsync(async (req, res) => {
-  const result = await studentService.createStudent(req.body);
+  const data = req.body;
+
+  const result = await studentService.createStudent(data);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
