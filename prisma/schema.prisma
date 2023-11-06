@@ -51,13 +51,13 @@ model AcademicDepartment {
 
 model Student {
   id                   String             @id @default(uuid())
-  studentId            String             @unique
+  studentId            String?            @unique
   firstName            String
   middleName           String
   lastName             String
   email                String
   contactNo            String
-  profileImage         String
+  profileImage         String?
   bloodGroup           String
   gender               String
   academicSemesterId   String
