@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,9 +14,9 @@ model AcademicSemester {
   code       String
   startMonth String
   endMonth   String
-  students   Student[]
   createdAt  DateTime  @default(now())
   updateAt   DateTime  @updatedAt
+  students   Student[]
 
   @@map("academic_semesters")
 }
@@ -27,11 +24,11 @@ model AcademicSemester {
 model AcademicFaculty {
   id                  String               @id @default(uuid())
   title               String               @unique
-  academicDepartments AcademicDepartment[]
-  students            Student[]
-  faculties           Faculty[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
+  academicDepartments AcademicDepartment[]
+  faculties           Faculty[]
+  students            Student[]
 
   @@map("academic_faculties")
 }
@@ -40,11 +37,11 @@ model AcademicDepartment {
   id                String          @id @default(uuid())
   title             String          @unique
   academicFacultyId String
-  academicFaculty   AcademicFaculty @relation(fields: [academicFacultyId], references: [id])
-  students          Student[]
-  faculties         Faculty[]
   createdAt         DateTime        @default(now())
   updateAt          DateTime        @updatedAt
+  academicFaculty   AcademicFaculty @relation(fields: [academicFacultyId], references: [id])
+  faculties         Faculty[]
+  students          Student[]
 
   @@map("academic_departments")
 }
@@ -55,9 +52,9 @@ model User {
   role      String?
   password  String?
   studentId String   @unique
-  students  Student  @relation(fields: [studentId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  students  Student  @relation(fields: [studentId], references: [id])
 
   @@map("users")
 }
@@ -74,13 +71,13 @@ model Student {
   bloodGroup           String
   gender               String
   academicSemesterId   String
-  academicSemester     AcademicSemester   @relation(fields: [academicSemesterId], references: [id])
   academicFacultyId    String
-  academicFaculty      AcademicFaculty    @relation(fields: [academicFacultyId], references: [id])
   academicDepartmentId String
-  academicDepartment   AcademicDepartment @relation(fields: [academicDepartmentId], references: [id])
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
+  academicDepartment   AcademicDepartment @relation(fields: [academicDepartmentId], references: [id])
+  academicFaculty      AcademicFaculty    @relation(fields: [academicFacultyId], references: [id])
+  academicSemester     AcademicSemester   @relation(fields: [academicSemesterId], references: [id])
   user                 User?
 
   @@map("students")
@@ -88,7 +85,6 @@ model Student {
 
 model Faculty {
   id                   String             @id @default(uuid())
-  facultyId            String             @unique
   firstName            String
   middleName           String?
   lastName             String
@@ -99,11 +95,12 @@ model Faculty {
   gender               String
   designation          String
   academicFacultyId    String
-  academicFaulty       AcademicFaculty    @relation(fields: [academicFacultyId], references: [id])
   academicDepartmentId String
-  academicFaculty      AcademicDepartment @relation(fields: [academicDepartmentId], references: [id])
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
+  facultyId            String             @unique
+  academicFaculty      AcademicDepartment @relation(fields: [academicDepartmentId], references: [id])
+  academicFaulty       AcademicFaculty    @relation(fields: [academicFacultyId], references: [id])
 
   @@map("faculties")
 }
@@ -123,9 +120,9 @@ model Room {
   roomNumber String
   floor      String
   buildingId String
-  building   Building @relation(fields: [buildingId], references: [id])
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  building   Building @relation(fields: [buildingId], references: [id])
 
   @@map("rooms")
 }
