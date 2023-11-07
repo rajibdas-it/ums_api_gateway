@@ -26,7 +26,7 @@ const getAllBuildings = catchAsync(async (req, res) => {
 });
 const getSingleBuilding = catchAsync(async (req, res) => {
   const id = req.params.id;
-  console.log(id);
+
   const result = await buildingService.getSingleBuilding(id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
