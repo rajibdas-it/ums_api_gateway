@@ -5,7 +5,7 @@ import { buildingService } from './building.service';
 
 const createBuilding = catchAsync(async (req, res) => {
   const data = req.body;
-  console.log(data);
+
   const result = await buildingService.createBuilding(data);
   sendResponse(res, {
     statusCode: httpStatus.OK,
