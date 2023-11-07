@@ -1,9 +1,12 @@
 import { Building } from '@prisma/client';
 import prisma from '../../../shared/prisma';
 
-const createBuilding = async (data: Building): Promise<Building> => {
+const createBuilding = async (payload: Building): Promise<Building> => {
+  console.log(payload);
   const result = await prisma.building.create({
-    data,
+    data: {
+      title: 'Building-A',
+    },
   });
   return result;
 };
