@@ -29,7 +29,7 @@ const getAllStudents = async (
   const { page, limit, skip, sortBy, sortOrder } = calculatePagination(options);
   const { searchTerm, ...fitersData } = filters;
   const andCondtions = [];
-  const sortCondition: { [key: string]: string } = {};
+  // const sortCondition: { [key: string]: string } = {};
 
   if (searchTerm) {
     andCondtions.push({
@@ -51,12 +51,14 @@ const getAllStudents = async (
   }
   const whereCondition: Prisma.StudentWhereInput =
     andCondtions.length > 0 ? { AND: andCondtions } : {};
-  sortCondition[sortBy] = sortOrder;
+  // sortCondition[sortBy] = sortOrder;
   const result = await prisma.student.findMany({
     skip,
     take: limit,
     where: whereCondition,
-    orderBy: sortCondition,
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
   });
   const total = await prisma.student.count({ where: whereCondition });
   return {

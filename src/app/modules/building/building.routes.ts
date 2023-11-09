@@ -33,4 +33,23 @@ router.get(
   buildingController.getSingleBuilding,
 );
 
+router.patch(
+  '/:id',
+  auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.FACULTY,
+  ),
+  buildingController.updateBuilding,
+);
+router.delete(
+  '/:id',
+  auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.FACULTY,
+  ),
+  buildingController.deleteBuliding,
+);
+
 export const buildingRoutes = router;
