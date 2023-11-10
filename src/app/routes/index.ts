@@ -3,6 +3,7 @@ import { academicDepartmentRoutes } from '../modules/academicDepartment/academic
 import { academicFacultyRoutes } from '../modules/academicFaculty/academicFaculty.route';
 import { academicRoutes } from '../modules/academicSemester/academicSemester.route';
 import { buildingRoutes } from '../modules/building/building.routes';
+import { courseRoutes } from '../modules/course/course.routes';
 import { roomsRoute } from '../modules/room/room.routes';
 import { studentRoutes } from '../modules/student/student.routes';
 
@@ -15,6 +16,7 @@ const routes = [
   { pathName: '/students/', routeName: studentRoutes },
   { pathName: '/buildings/', routeName: buildingRoutes },
   { pathName: '/rooms/', routeName: roomsRoute },
+  { pathName: '/course/', routeName: courseRoutes },
 ];
 
 routes.forEach(route => {
