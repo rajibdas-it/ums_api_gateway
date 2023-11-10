@@ -5,7 +5,8 @@ import sendResponse from '../../../shared/sendResponse';
 import { courseService } from './course.service';
 
 const createCourse = catchAsync(async (req, res) => {
-  const result = await courseService.createCourse(req.body);
+  const data = req.body;
+  const result = await courseService.createCourse(data);
 
   sendResponse<Course>(res, {
     statusCode: httpStatus.OK,

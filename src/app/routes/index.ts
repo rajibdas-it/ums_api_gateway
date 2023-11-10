@@ -16,7 +16,7 @@ const routes = [
   { pathName: '/students/', routeName: studentRoutes },
   { pathName: '/buildings/', routeName: buildingRoutes },
   { pathName: '/rooms/', routeName: roomsRoute },
-  { pathName: '/course/', routeName: courseRoutes },
+  { pathName: '/courses/', routeName: courseRoutes },
 ];
 
 routes.forEach(route => {
