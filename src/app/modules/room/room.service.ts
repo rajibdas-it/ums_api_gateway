@@ -8,6 +8,9 @@ import { IRoomFilters } from './room.interface';
 const createRoom = async (data: Room): Promise<Room | null> => {
   const result = await prisma.room.create({
     data,
+    include: {
+      building: true,
+    },
   });
   return result;
 };
