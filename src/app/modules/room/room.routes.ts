@@ -14,4 +14,5 @@ import { roomController } from './room.controller';
 const router = express.Router();
 
 router.post('/create-room/', roomController.createRooms);
+router.get('/', roomController.getAllRooms);
 export const roomsRoute = router;
