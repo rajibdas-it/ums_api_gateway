@@ -15,7 +15,7 @@ const createRooms = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Building fetched successfully',
+    message: 'New Room Created successfully',
     data: result,
   });
 });
@@ -27,13 +27,48 @@ const getAllRooms = catchAsync(async (req, res) => {
   sendResponse<Room[]>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Building fetched successfully',
+    message: 'Rooms fetched successfully',
     meta: result.meta,
     data: result.data,
+  });
+});
+
+const getSingleRoom = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await roomService.getSingleRoom(id);
+  sendResponse<Room>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Room fetched successfully',
+    data: result,
+  });
+});
+const updateRoom = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const data = req.body;
+  const result = await roomService.updateRoom(id, data);
+  sendResponse<Room>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Room updated successfully',
+    data: result,
+  });
+});
+const deleteRoom = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await roomService.deleteRoom(id);
+  sendResponse<Room>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Room deleted successfully',
+    data: result,
   });
 });
 
 export const roomController = {
   createRooms,
   getAllRooms,
+  getSingleRoom,
+  updateRoom,
+  deleteRoom,
 };

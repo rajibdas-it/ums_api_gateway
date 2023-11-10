@@ -15,4 +15,7 @@ const router = express.Router();
 
 router.post('/create-room/', roomController.createRooms);
 router.get('/', roomController.getAllRooms);
+router.get('/:id', roomController.getSingleRoom);
+router.patch('/update-room/:id', roomController.updateRoom);
+router.delete('/delete-room/:id', roomController.deleteRoom);
 export const roomsRoute = router;
