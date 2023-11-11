@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Prisma } from '@prisma/client';
+import { Course, Prisma } from '@prisma/client';
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
 import calculatePagination from '../../../helper/calculatePagination';
+import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import prisma from '../../../shared/prisma';
 import { courseSearchableFields } from './course.constant';
@@ -64,7 +65,7 @@ const createCourse = async (data: ICourseCreateData): Promise<any> => {
 const getAllCourses = async (
   options: IPaginationOptions,
   filters: ICourseFilters,
-) => {
+): Promise<IGenericResponse<Course[]>> => {
   const { page, limit, skip, sortBy, sortOrder } = calculatePagination(options);
 
   const { searchTerm, ...filtersData } = filters;
@@ -124,7 +125,27 @@ const getAllCourses = async (
   };
 };
 
+const getSingleCourse = async (id: string): Promise<Course | null> => {
+  const result = await prisma.course.findUnique({
+    where: { id },
+    include: {
+      preRequisite: {
+        include: {
+          preRequisite: true,
+        },
+      },
+      preRequisiteFor: {
+        include: {
+          course: true,
+        },
+      },
+    },
+  });
+  return result;
+};
+
 export const courseService = {
   createCourse,
   getAllCourses,
+  getSingleCourse,
 };
