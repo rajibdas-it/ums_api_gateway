@@ -4,9 +4,12 @@ import { courseController } from './course.controller';
 const router = express.Router();
 
 router.post('/create-course/', courseController.createCourse);
-router.post('/:id/assign-faculty', courseController.assignFaculty);
+
 router.get('/', courseController.getAllCourses);
 router.get('/:id', courseController.getSingleCourse);
 router.patch('/update-course/:id', courseController.updateCourse);
+
+router.post('/:id/assign-faculty', courseController.assignFaculty);
+router.delete('/:id/remove-faculty', courseController.removeFaculties);
 
 export const courseRoutes = router;

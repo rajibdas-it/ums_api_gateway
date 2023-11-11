@@ -159,4 +159,5 @@ model CourseFaculty {
   faculty   Faculty @relation(fields: [facultyId], references: [id])
 
   @@id([courseId, facultyId])
+  @@map("course_faculties")
 }

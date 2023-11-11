@@ -1,4 +1,5 @@
 import express from 'express';
+import { courseController } from '../course/course.controller';
 import { facultyController } from './faculty.controller';
 
 const router = express.Router();
@@ -20,5 +21,8 @@ router.get(
 //   auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
 //   studentController.deleteStudent,
 // );
+
+router.post('/:id/assign-course', courseController.assignCourses);
+router.delete('/:id/remove-course', courseController.removeCourses);
 
 export const facultiesRoute = router;
