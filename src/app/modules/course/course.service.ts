@@ -1,7 +1,7 @@
 import { IPrequisiteCourseRequest } from './course.interface';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Course, Prisma } from '@prisma/client';
+import { Course, CourseFaculty, Prisma } from '@prisma/client';
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
 import calculatePagination from '../../../helper/calculatePagination';
@@ -224,9 +224,32 @@ const updateCourse = async (
   return responseData;
 };
 
+const assignFaculty = async (
+  id: string,
+  payload: string[],
+): Promise<CourseFaculty[]> => {
+  await prisma.courseFaculty.createMany({
+    data: payload.map(facultyId => ({
+      courseId: id,
+      facultyId: facultyId,
+    })),
+  });
+
+  const assignFacultyData = await prisma.courseFaculty.findMany({
+    where: {
+      courseId: id,
+    },
+    include: {
+      faculty: true,
+    },
+  });
+  return assignFacultyData;
+};
+
 export const courseService = {
   createCourse,
   getAllCourses,
   getSingleCourse,
   updateCourse,
+  assignFaculty,
 };
