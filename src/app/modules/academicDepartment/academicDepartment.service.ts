@@ -49,9 +49,9 @@ const getAllDepartment = async (
   const whereCondition: Prisma.AcademicDepartmentWhereInput =
     andCondition.length > 0 ? { AND: andCondition } : {};
 
-  const sortConditions: { [key: string]: string } = {};
+  // const sortConditions: { [key: string]: string } = {};
 
-  sortConditions[sortBy] = sortOrder;
+  // sortConditions[sortBy] = sortOrder;
 
   const result = await prisma.academicDepartment.findMany({
     where: whereCondition,
