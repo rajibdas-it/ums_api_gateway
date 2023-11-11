@@ -1,6 +1,8 @@
 import express from 'express';
+import validateRequest from '../../middlewares/validateRequest';
 import { courseController } from '../course/course.controller';
 import { facultyController } from './faculty.controller';
+import { facultyValidation } from './faculty.validation';
 
 const router = express.Router();
 
@@ -22,7 +24,15 @@ router.get(
 //   studentController.deleteStudent,
 // );
 
-router.post('/:id/assign-course', courseController.assignCourses);
-router.delete('/:id/remove-course', courseController.removeCourses);
+router.post(
+  '/:id/assign-course',
+  validateRequest(facultyValidation.assignOrRemoveCourses),
+  courseController.assignCourses,
+);
+router.delete(
+  '/:id/remove-course',
+  validateRequest(facultyValidation.assignOrRemoveCourses),
+  courseController.removeCourses,
+);
 
 export const facultiesRoute = router;
