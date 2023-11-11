@@ -78,8 +78,6 @@ const removeFaculties = catchAsync(async (req, res) => {
 
 const assignCourses = catchAsync(async (req, res) => {
   const { id } = req.params;
-  console.log(id);
-  console.log(req.body.courses);
 
   const result = await courseService.assignCourses(id, req.body.courses);
   sendResponse(res, {
