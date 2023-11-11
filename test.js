@@ -68,3 +68,62 @@ async function bootstrap() {
 
 bootstrap();
  */
+
+
+// const { preRequisiteCourses, ...courseData } = data;
+// // console.log(preRequisiteCourses);
+// // console.log(courseData);
+// const result = await prisma.course.create({
+//   data: courseData,
+// });
+
+// if (preRequisiteCourses && preRequisiteCourses.length > 0) {
+//   for (let index = 0; index < preRequisiteCourses.length; index++) {
+//     const createPreRequisiteCourse = await prisma.courseToPreRequisite.create(
+//       {
+//         data: {
+//           courseId: result.id,
+//           prequisiteId: preRequisiteCourses[index].courseId,
+//         },
+//       },
+//     );
+//     // console.log(createPreRequisiteCourse);
+//   }
+// }
+// return result;
+
+
+// const result = await prisma.course.create({
+//   data: courseData,
+// });
+
+// One way using map
+// if (preRequisiteCourses && preRequisiteCourses.length > 0) {
+//   preRequisiteCourses.map(async (course: any) => {
+//     await prisma.courseToPreRequisite.create({
+//       data: {
+//         courseId: newCourse.id,
+//         prequisiteId: course.courseId,
+//       },
+//     });
+//   });
+// }
+
+// Another way
+// if (preRequisiteCourses && preRequisiteCourses.length > 0) {
+//   for (let i = 0; i < preRequisiteCourses.length; i++) {
+//     const createPreRequisiteCourse = await prisma.courseToPreRequisite.create(
+//       {
+//         data: {
+//           courseId: result.id,
+//           prequisiteId: preRequisiteCourses[i].courseId,
+//         },
+//       },
+//     );
+//     console.log(createPreRequisiteCourse);
+//   }
+// }
+
+// const result = await prisma.course.findUnique({
+//   where: { id: newCourse.id },
+// });
