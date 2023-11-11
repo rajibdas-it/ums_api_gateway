@@ -1,3 +1,4 @@
+import { IPrequisiteCourseRequest } from './course.interface';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Course, Prisma } from '@prisma/client';
@@ -6,6 +7,7 @@ import ApiError from '../../../errors/ApiError';
 import calculatePagination from '../../../helper/calculatePagination';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
+import { asyncForEach } from '../../../shared/asyncForLoop';
 import prisma from '../../../shared/prisma';
 import { courseSearchableFields } from './course.constant';
 import { ICourseCreateData, ICourseFilters } from './course.interface';
@@ -22,20 +24,25 @@ const createCourse = async (data: ICourseCreateData): Promise<any> => {
     }
 
     if (preRequisiteCourses && preRequisiteCourses.length > 0) {
-      for (let i = 0; i < preRequisiteCourses.length; i++) {
-        const createPreRequisiteCourse = await ts.courseToPreRequisite.create({
-          data: {
-            courseId: result.id,
-            prequisiteId: preRequisiteCourses[i].courseId,
-          },
-        });
-        if (!createPreRequisiteCourse) {
-          throw new ApiError(
-            httpStatus.BAD_REQUEST,
-            'Failed to create pre-requisite',
+      await asyncForEach(
+        preRequisiteCourses,
+        async (preRequisiteCourse: IPrequisiteCourseRequest) => {
+          const createPreRequisiteCourse = await ts.courseToPreRequisite.create(
+            {
+              data: {
+                courseId: result.id,
+                prequisiteId: preRequisiteCourse.courseId,
+              },
+            },
           );
-        }
-      }
+          if (!createPreRequisiteCourse) {
+            throw new ApiError(
+              httpStatus.BAD_REQUEST,
+              'Failed to create pre-requisite',
+            );
+          }
+        },
+      );
     }
     return result;
   });
@@ -144,8 +151,82 @@ const getSingleCourse = async (id: string): Promise<Course | null> => {
   return result;
 };
 
+const updateCourse = async (
+  id: string,
+  payload: ICourseCreateData,
+): Promise<Course | null> => {
+  const { preRequisiteCourses, ...courseData } = payload;
+
+  await prisma.$transaction(async ts => {
+    const result = await ts.course.update({
+      where: { id },
+      data: courseData,
+    });
+    if (!result) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'unable to update course');
+    }
+
+    if (preRequisiteCourses && preRequisiteCourses.length > 0) {
+      const deletePreRequisite = preRequisiteCourses.filter(
+        course => course.courseId && course.isDeleted,
+      );
+      const newPreRequisite = preRequisiteCourses.filter(
+        course => course.courseId && !course.isDeleted,
+      );
+      await asyncForEach(
+        deletePreRequisite,
+        async (deletePreRequisiteCourse: IPrequisiteCourseRequest) => {
+          await ts.courseToPreRequisite.deleteMany({
+            where: {
+              AND: [
+                {
+                  courseId: id,
+                },
+                {
+                  prequisiteId: deletePreRequisiteCourse.courseId,
+                },
+              ],
+            },
+          });
+        },
+      );
+
+      await asyncForEach(
+        newPreRequisite,
+        async (newPreRequisiteCourse: IPrequisiteCourseRequest) => {
+          await ts.courseToPreRequisite.create({
+            data: {
+              courseId: id,
+              prequisiteId: newPreRequisiteCourse.courseId,
+            },
+          });
+        },
+      );
+    }
+    return result;
+  });
+
+  const responseData = await prisma.course.findUnique({
+    where: { id },
+    include: {
+      preRequisite: {
+        include: {
+          preRequisite: true,
+        },
+      },
+      preRequisiteFor: {
+        include: {
+          course: true,
+        },
+      },
+    },
+  });
+  return responseData;
+};
+
 export const courseService = {
   createCourse,
   getAllCourses,
   getSingleCourse,
+  updateCourse,
 };
