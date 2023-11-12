@@ -47,8 +47,24 @@ const getSingleSemesterRegistration = catchAsync(async (req, res) => {
   });
 });
 
+const updateSemesterRegistration = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const data = req.body;
+  const result = await SemesterRegistrationService.updateSemesterRegistration(
+    id,
+    data,
+  );
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Semester registration successfully',
+    data: result,
+  });
+});
+
 export const SemesterRegistrationController = {
   createSemesterRegistration,
   getAllSemesterRegistration,
   getSingleSemesterRegistration,
+  updateSemesterRegistration,
 };
