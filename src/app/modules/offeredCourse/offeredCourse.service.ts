@@ -8,17 +8,31 @@ const createOfferedCourse = async (
   data: ICreateOfferedCourse,
 ): Promise<OfferedCourse[]> => {
   const { academicDepartmentId, semesterRegistrationId, courseIds } = data;
-  const result: any = [];
+  const result: OfferedCourse[] = [];
 
   await asyncForEach(courseIds, async (courseId: string) => {
-    const createCourse = await prisma.offeredCourse.create({
-      data: {
+    const alreadyExist = await prisma.offeredCourse.findFirst({
+      where: {
         academicDepartmentId,
         semesterRegistrationId,
         courseId,
       },
     });
-    result.push(createCourse);
+    if (!alreadyExist) {
+      const createCourse = await prisma.offeredCourse.create({
+        data: {
+          academicDepartmentId,
+          semesterRegistrationId,
+          courseId,
+        },
+        include: {
+          academicDepartment: true,
+          semesterRegistration: true,
+          course: true,
+        },
+      });
+      result.push(createCourse);
+    }
   });
   return result;
 };
