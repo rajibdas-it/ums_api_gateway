@@ -10,7 +10,7 @@ const createOfferedCourseSection = async (data: OfferedCourseSection) => {
   if (!isExist) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Offered course not found');
   }
-
+  // data.semesterRegistrationId = isExist.semesterRegistrationId;
   const result = await prisma.offeredCourseSection.create({
     data,
   });
