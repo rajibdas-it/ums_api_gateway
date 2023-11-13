@@ -1,8 +1,14 @@
-import { OfferedCourseClassSchedule } from '@prisma/client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { OfferedCourseClassSchedule, Prisma } from '@prisma/client';
 import calculatePagination from '../../../helper/calculatePagination';
+import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import prisma from '../../../shared/prisma';
-import { offeredCourseClassScheduleSearchableFields } from './offeredCourseClassSchedule.constant';
+import {
+  offeredCourseClassScheduleFilterMapper,
+  offeredCourseClassScheduleFilterableFields,
+  offeredCourseClassScheduleSearchableFields,
+} from './offeredCourseClassSchedule.constant';
 import { IClassScheduleFilters } from './offeredCourseClassSchedule.interface';
 import { offeredCourseClassScheduleUtils } from './offeredCourseClassSchedule.utils';
 
@@ -25,7 +31,7 @@ const createOfferedCourseClassSchedule = async (
 const getAllOfferedCourseClassSchedule = async (
   options: IPaginationOptions,
   filters: IClassScheduleFilters,
-): Promise<OfferedCourseClassSchedule[]> => {
+): Promise<IGenericResponse<OfferedCourseClassSchedule[]>> => {
   const { page, limit, skip, sortBy, sortOrder } = calculatePagination(options);
   const { searchTerm, ...filtersData } = filters;
 
@@ -41,11 +47,59 @@ const getAllOfferedCourseClassSchedule = async (
       })),
     });
   }
+  //   if (searchTerm) {
+  //     andConditons.push({
+  //       dayOfWeek: searchTerm,
+  //     });
+  //   }
+
+  //   if (filtersData && Object.keys(filtersData).length > 0) {
+  //     andConditons.push({
+  //       AND: Object.keys(filtersData).map(key => {
+  //         if (offeredCourseClassScheduleFilterableFields.includes(key)) {
+  //           return {
+  //             [offeredCourseClassScheduleFilterMapper[key]]: {
+  //               id: (filtersData as any)[key],
+  //             },
+  //           };
+  //         } else {
+  //           return {
+  //             [key]: {
+  //               equals: (filtersData as any)[key],
+  //             },
+  //           };
+  //         }
+  //       }),
+  //     });
+  //   }
+
+  if (filtersData && Object.keys(filters).length > 0) {
+    andConditons.push({
+      AND: Object.keys(filtersData).map(key => {
+        if (offeredCourseClassScheduleFilterableFields.includes(key)) {
+          return {
+            [offeredCourseClassScheduleFilterMapper[key]]: {
+              id: (filtersData as any)[key],
+            },
+          };
+        } else {
+          return {
+            [key]: {
+              equals: (filtersData as any)[key],
+            },
+          };
+        }
+      }),
+    });
+  }
+
+  const whereCondition: Prisma.OfferedCourseClassScheduleWhereInput =
+    andConditons.length > 0 ? { AND: andConditons } : {};
 
   const result = await prisma.offeredCourseClassSchedule.findMany({
     skip,
     take: limit,
-    where: { AND: andConditons },
+    where: whereCondition,
     orderBy: {
       [sortBy]: sortOrder,
     },
@@ -56,7 +110,18 @@ const getAllOfferedCourseClassSchedule = async (
       faculty: true,
     },
   });
-  return result;
+
+  const total = await prisma.offeredCourseClassSchedule.count({
+    where: whereCondition,
+  });
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  };
 };
 
 export const offeredCourseClassScheduleService = {

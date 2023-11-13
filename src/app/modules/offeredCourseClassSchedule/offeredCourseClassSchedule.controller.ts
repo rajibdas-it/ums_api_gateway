@@ -23,6 +23,7 @@ const createOfferedCourseClassSchedule = catchAsync(async (req, res) => {
 const getAllOfferedCourseClassSchedule = catchAsync(async (req, res) => {
   const options = pick(req.query, paginationsFields);
   const filters = pick(req.query, offeredCourseClassScheduleFilterableFields);
+  //   console.log('Filters Data', filters);
   const result =
     await offeredCourseClassScheduleService.getAllOfferedCourseClassSchedule(
       options,
@@ -32,7 +33,8 @@ const getAllOfferedCourseClassSchedule = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Offered course class schedule created successfully',
-    data: result,
+    meta: result.meta,
+    data: result.data,
   });
 });
 
