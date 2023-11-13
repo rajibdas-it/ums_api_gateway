@@ -1,10 +1,4 @@
-import { WeekDays } from '@prisma/client';
-
-export type ISlots = {
-  startTime: string;
-  endTime: string;
-  dayOfWeek: WeekDays;
-};
+import { ISlots } from '../app/modules/offeredCourseClassSchedule/offeredCourseClassSchedule.interface';
 
 export const hasTimeConflict = (existingSlots: ISlots[], newSlots: ISlots) => {
   for (const slot of existingSlots) {
