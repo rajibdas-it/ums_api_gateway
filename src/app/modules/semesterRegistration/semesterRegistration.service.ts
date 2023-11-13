@@ -213,6 +213,14 @@ const startMyRegistration = async (
   };
 };
 
+const enrollIntoCourse = async data => {
+  const result = await prisma.studentSemesterRegistrationCourse.create({
+    data,
+  });
+
+  return result;
+};
+
 export const SemesterRegistrationService = {
   createSemesterRegistration,
   getAllSemesterRegistration,
@@ -220,4 +228,5 @@ export const SemesterRegistrationService = {
   updateSemesterRegistration,
   deleteSemesterRegistration,
   startMyRegistration,
+  enrollIntoCourse,
 };
