@@ -9,7 +9,7 @@ const createRoom = async (data: Room): Promise<Room | null> => {
   const result = await prisma.room.create({
     data,
     include: {
-      building: true,
+      buildings: true,
     },
   });
   return result;
