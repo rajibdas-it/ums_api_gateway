@@ -16,6 +16,7 @@ const createOfferedCourseClassSchedule = async (
   data: OfferedCourseClassSchedule,
 ): Promise<OfferedCourseClassSchedule> => {
   await offeredCourseClassScheduleUtils.checkRoomAvailable(data);
+  await offeredCourseClassScheduleUtils.checkFacultyAvailable(data);
   const result = await prisma.offeredCourseClassSchedule.create({
     data,
     include: {
@@ -47,31 +48,6 @@ const getAllOfferedCourseClassSchedule = async (
       })),
     });
   }
-  //   if (searchTerm) {
-  //     andConditons.push({
-  //       dayOfWeek: searchTerm,
-  //     });
-  //   }
-
-  //   if (filtersData && Object.keys(filtersData).length > 0) {
-  //     andConditons.push({
-  //       AND: Object.keys(filtersData).map(key => {
-  //         if (offeredCourseClassScheduleFilterableFields.includes(key)) {
-  //           return {
-  //             [offeredCourseClassScheduleFilterMapper[key]]: {
-  //               id: (filtersData as any)[key],
-  //             },
-  //           };
-  //         } else {
-  //           return {
-  //             [key]: {
-  //               equals: (filtersData as any)[key],
-  //             },
-  //           };
-  //         }
-  //       }),
-  //     });
-  //   }
 
   if (filtersData && Object.keys(filters).length > 0) {
     andConditons.push({
