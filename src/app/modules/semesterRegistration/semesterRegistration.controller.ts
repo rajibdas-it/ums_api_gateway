@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SemesterRegistration } from '@prisma/client';
 import httpStatus from 'http-status';
 import { paginationsFields } from '../../../constants/paginations';
@@ -74,10 +75,23 @@ const deleteSemesterRegistration = catchAsync(async (req, res) => {
   });
 });
 
+const startMyRegistration = catchAsync(async (req, res) => {
+  const user = (req as any).user;
+
+  const result = await SemesterRegistrationService.startMyRegistration(user.id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'registration successfull',
+    data: result,
+  });
+});
+
 export const SemesterRegistrationController = {
   createSemesterRegistration,
   getAllSemesterRegistration,
   getSingleSemesterRegistration,
   updateSemesterRegistration,
   deleteSemesterRegistration,
+  startMyRegistration,
 };

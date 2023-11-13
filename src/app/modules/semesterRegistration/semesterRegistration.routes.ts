@@ -1,4 +1,6 @@
 import express from 'express';
+import { ENUM_USER_ROLE } from '../../../enums/user';
+import auth from '../../middlewares/auth';
 import validateRequest from '../../middlewares/validateRequest';
 import { semesterRegistrationValidation } from './semesterRagistration.validation';
 import { SemesterRegistrationController } from './semesterRegistration.controller';
@@ -28,6 +30,11 @@ router.patch(
 router.delete(
   '/delete-semester-registration/:id',
   SemesterRegistrationController.deleteSemesterRegistration,
+);
+router.post(
+  '/start-registration',
+  auth(ENUM_USER_ROLE.STUDENT),
+  SemesterRegistrationController.startMyRegistration,
 );
 
 export const semesterRegistrationRoutes = router;
