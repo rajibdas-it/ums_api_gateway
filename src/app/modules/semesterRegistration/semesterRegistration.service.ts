@@ -406,8 +406,46 @@ const confrimMyRegistration = async (
       },
     });
 
-  console.log('semesterRegistration', semesterRegistration);
-  console.log('studentSemesterRegistration', studentSemesterRegistration);
+  if (!startMyRegistration) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'no semester oning now');
+  }
+  if (!studentSemesterRegistration) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'You are not recognized for this semester',
+    );
+  }
+
+  if (studentSemesterRegistration.totalCreditTaken === 0) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'You are not enroll in any course',
+    );
+  }
+
+  if (
+    studentSemesterRegistration.totalCreditTaken &&
+    semesterRegistration?.minCredit &&
+    semesterRegistration.maxCredit &&
+    (studentSemesterRegistration?.totalCreditTaken <
+      semesterRegistration?.minCredit ||
+      studentSemesterRegistration.totalCreditTaken >
+        semesterRegistration?.maxCredit)
+  ) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      `You can take only ${semesterRegistration.minCredit} to ${semesterRegistration.maxCredit}`,
+    );
+  }
+
+  await prisma.studentSemesterRegistration.update({
+    where: {
+      id: studentSemesterRegistration.id,
+    },
+    data: {
+      isConfirmed: true,
+    },
+  });
 
   return {
     message: 'Registration confirm successfull',
