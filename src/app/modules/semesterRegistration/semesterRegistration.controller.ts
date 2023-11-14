@@ -130,6 +130,17 @@ const confrimMyRegistration = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const getMyRegistration = catchAsync(async (req, res) => {
+  const user = (req as any).user;
+
+  const result = await SemesterRegistrationService.getMyRegistration(user?.id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'registration fetched successfully',
+    data: result,
+  });
+});
 
 export const SemesterRegistrationController = {
   createSemesterRegistration,
@@ -141,4 +152,5 @@ export const SemesterRegistrationController = {
   enrollIntoCourse,
   withdrawFromCourse,
   confrimMyRegistration,
+  getMyRegistration,
 };
