@@ -39,11 +39,13 @@ router.post(
 
 router.post(
   '/enroll-course',
+  validateRequest(semesterRegistrationValidation.enrollAndWithdrawCouse),
   auth(ENUM_USER_ROLE.STUDENT),
   SemesterRegistrationController.enrollIntoCourse,
 );
 router.post(
   '/withdraw-course',
+  validateRequest(semesterRegistrationValidation.enrollAndWithdrawCouse),
   auth(ENUM_USER_ROLE.STUDENT),
   SemesterRegistrationController.withdrawFromCourse,
 );
