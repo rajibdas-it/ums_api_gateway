@@ -308,6 +308,81 @@ const enrollIntoCourse = async (
   return { message: 'Successfully enroll into course' };
 };
 
+const withdrawFromCourse = async (
+  authId: string,
+  payload: IEnrollCoursePayload,
+) => {
+  const student = await prisma.student.findUnique({
+    where: {
+      studentId: authId,
+    },
+  });
+
+  const semesterRegistration = await prisma.semesterRegistration.findFirst({
+    where: {
+      status: SemesterRegistrationStatus.ONGOING,
+    },
+  });
+
+  const offeredCourse = await prisma.offeredCourse.findFirst({
+    where: { id: payload.offeredCourseId },
+    include: { course: true },
+  });
+
+  if (!student) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Student not found');
+  }
+
+  if (!semesterRegistration) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'semester registration not found');
+  }
+
+  if (!offeredCourse) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Offered Course not found');
+  }
+
+  await prisma.$transaction(async ts => {
+    await ts.studentSemesterRegistrationCourse.delete({
+      where: {
+        semesterRegistrationId_studentId_offeredCourseId: {
+          semesterRegistrationId: semesterRegistration?.id,
+          studentId: student?.id,
+          offeredCourseId: payload?.offeredCourseId,
+        },
+      },
+    });
+
+    await ts.offeredCourseSection.update({
+      where: {
+        id: payload.offeredCourseSectionId,
+      },
+      data: {
+        currentlyEnrolledStudent: {
+          decrement: 1,
+        },
+      },
+    });
+
+    await ts.studentSemesterRegistration.updateMany({
+      where: {
+        student: {
+          id: student.id,
+        },
+        semesterRegistration: {
+          id: semesterRegistration.id,
+        },
+      },
+      data: {
+        totalCreditTaken: {
+          decrement: offeredCourse.course.credits,
+        },
+      },
+    });
+  });
+
+  return { message: 'Successfully withdraw from course' };
+};
+
 export const SemesterRegistrationService = {
   createSemesterRegistration,
   getAllSemesterRegistration,
@@ -316,4 +391,5 @@ export const SemesterRegistrationService = {
   deleteSemesterRegistration,
   startMyRegistration,
   enrollIntoCourse,
+  withdrawFromCourse,
 };
