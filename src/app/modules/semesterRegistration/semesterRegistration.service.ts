@@ -13,6 +13,7 @@ import calculatePagination from '../../../helper/calculatePagination';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import { asyncForEach } from '../../../shared/asyncForLoop';
 import prisma from '../../../shared/prisma';
+import { studentEnrolledCourseMarkService } from '../studentEnrolledCourseMark/studentEnrolledMark.service';
 import { studentSemesterPaymentService } from '../studentSemesterPayments/studentSemesterPayment.service';
 import { semesterRegistrationSearchableFields } from './semesterRegistration.constant';
 import {
@@ -511,8 +512,8 @@ const startNewSemester = async (id: string): Promise<{ message: string }> => {
   //   throw new ApiError(httpStatus.BAD_REQUEST, 'Semester is already started');
   // }
 
-  await prisma.$transaction(async PrismaTransactionClient => {
-    await PrismaTransactionClient.academicSemester.updateMany({
+  await prisma.$transaction(async prismaTransactionClient => {
+    await prismaTransactionClient.academicSemester.updateMany({
       where: {
         isCurrent: true,
       },
@@ -521,7 +522,7 @@ const startNewSemester = async (id: string): Promise<{ message: string }> => {
       },
     });
 
-    await PrismaTransactionClient.academicSemester.update({
+    await prismaTransactionClient.academicSemester.update({
       where: {
         id: semesterRegistration.academicSemester.id,
       },
@@ -531,7 +532,7 @@ const startNewSemester = async (id: string): Promise<{ message: string }> => {
     });
 
     const studentSemesterRegistrations =
-      await PrismaTransactionClient.studentSemesterRegistration.findMany({
+      await prismaTransactionClient.studentSemesterRegistration.findMany({
         where: {
           semesterRegistration: {
             id,
@@ -546,7 +547,7 @@ const startNewSemester = async (id: string): Promise<{ message: string }> => {
         if (stuSemReg.totalCreditTaken) {
           const totalPaymentAmount = stuSemReg.totalCreditTaken * 5000;
           await studentSemesterPaymentService.createSemesterPayment(
-            PrismaTransactionClient,
+            prismaTransactionClient,
             {
               studentId: stuSemReg?.studentId,
               academicSemesterId: semesterRegistration?.academicSemesterId,
@@ -556,7 +557,7 @@ const startNewSemester = async (id: string): Promise<{ message: string }> => {
         }
 
         const studentSemesterRegistrationCourses =
-          await PrismaTransactionClient.studentSemesterRegistrationCourse.findMany(
+          await prismaTransactionClient.studentSemesterRegistrationCourse.findMany(
             {
               where: {
                 semesterRegistration: {
@@ -584,7 +585,7 @@ const startNewSemester = async (id: string): Promise<{ message: string }> => {
             },
           ) => {
             const isExistEnrollData =
-              await PrismaTransactionClient.studentEnrollCourse.findFirst({
+              await prismaTransactionClient.studentEnrollCourse.findFirst({
                 where: {
                   studentId: item.studentId,
                   courseId: item.offeredCourse.courseId,
@@ -599,9 +600,19 @@ const startNewSemester = async (id: string): Promise<{ message: string }> => {
                 academicSemesterId: semesterRegistration.academicSemesterId,
               };
 
-              await prisma.studentEnrollCourse.createMany({
-                data: enrolledCourseData,
-              });
+              const studentEnrolledCourseData =
+                await prismaTransactionClient.studentEnrollCourse.create({
+                  data: enrolledCourseData,
+                });
+
+              await studentEnrolledCourseMarkService.createStudentEnrolledCourseDefaultMark(
+                prismaTransactionClient,
+                {
+                  studentId: item.studentId,
+                  studentEnrolledCourseId: studentEnrolledCourseData?.id,
+                  academicSemesterId: semesterRegistration.academicSemesterId,
+                },
+              );
             }
           },
         );
