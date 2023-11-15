@@ -8,6 +8,7 @@ import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
 import calculatePagination from '../../../helper/calculatePagination';
 import { IPaginationOptions } from '../../../interfaces/pagination';
+import { asyncForEach } from '../../../shared/asyncForLoop';
 import prisma from '../../../shared/prisma';
 import { semesterRegistrationSearchableFields } from './semesterRegistration.constant';
 import {
@@ -502,9 +503,9 @@ const startNewSemester = async (id: string) => {
     );
   }
 
-  if (semesterRegistration.academicSemester.isCurrent) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Semester is already started');
-  }
+  // if (semesterRegistration.academicSemester.isCurrent) {
+  //   throw new ApiError(httpStatus.BAD_REQUEST, 'Semester is already started');
+  // }
 
   await prisma.$transaction(async PrismaTransactionClient => {
     await PrismaTransactionClient.academicSemester.updateMany({
@@ -524,6 +525,36 @@ const startNewSemester = async (id: string) => {
         isCurrent: true,
       },
     });
+
+    const studentSemesterRegistrations =
+      await PrismaTransactionClient.studentSemesterRegistration.findMany({
+        where: {
+          semesterRegistration: {
+            id,
+          },
+          isConfirmed: true,
+        },
+      });
+
+    asyncForEach(
+      studentSemesterRegistrations,
+      async (stuSemReg: StudentSemesterRegistration) => {
+        const studentSemesterRegistrationCourse =
+          await PrismaTransactionClient.studentSemesterRegistrationCourse.findMany(
+            {
+              where: {
+                semesterRegistration: {
+                  id,
+                },
+                student: {
+                  id: stuSemReg.studentId,
+                },
+              },
+            },
+          );
+        console.log(studentSemesterRegistrationCourse);
+      },
+    );
   });
 
   return {
