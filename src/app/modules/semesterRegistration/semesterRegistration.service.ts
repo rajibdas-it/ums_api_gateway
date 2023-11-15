@@ -1,4 +1,6 @@
 import {
+  Course,
+  OfferedCourse,
   Prisma,
   SemesterRegistration,
   SemesterRegistrationStatus,
@@ -550,11 +552,32 @@ const startNewSemester = async (id: string) => {
               },
             },
             include: {
-              semesterRegistration: true,
-              student: true,
+              offeredCourse: {
+                include: {
+                  course: true,
+                },
+              },
             },
           });
-        console.log(studentSemesterRegistrationCourses);
+
+        await asyncForEach(
+          studentSemesterRegistrationCourses,
+          async (
+            item: StudentSemesterRegistration & {
+              offeredCourse: OfferedCourse & { course: Course };
+            },
+          ) => {
+            const enrolledCourseData = {
+              studentId: item.studentId,
+              courseId: item.offeredCourse.courseId,
+              academicSemesterId: semesterRegistration.academicSemesterId,
+            };
+
+            await prisma.studentEnrollCourse.create({
+              data: enrolledCourseData,
+            });
+          },
+        );
       },
     );
   });

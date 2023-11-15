@@ -19,6 +19,7 @@ model AcademicSemester {
   updateAt             DateTime               @updatedAt
   students             Student[]
   SemesterRegistration SemesterRegistration[]
+  studentEnrollCourses StudentEnrollCourse[]
 
   @@map("academic_semesters")
 }
@@ -84,6 +85,7 @@ model Student {
   user                              User?
   studentSemesterRegistrations      StudentSemesterRegistration[]
   StudentSemesterRegistrationCourse StudentSemesterRegistrationCourse[]
+  StudentEnrollCourse               StudentEnrollCourse[]
 
   @@map("students")
 }
@@ -136,16 +138,17 @@ model Room {
 }
 
 model Course {
-  id              String                 @id @default(uuid())
-  title           String
-  code            String
-  credits         Int                    @default(0)
-  createdAt       DateTime               @default(now())
-  updatedAt       DateTime               @updatedAt
-  preRequisite    CourseToPreRequisite[] @relation("CourseToPreRequisite")
-  preRequisiteFor CourseToPreRequisite[] @relation("PreRequisiteToCourse")
-  faculties       CourseFaculty[]
-  offeredCourses  OfferedCourse[]
+  id                   String                 @id @default(uuid())
+  title                String
+  code                 String
+  credits              Int                    @default(0)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  preRequisite         CourseToPreRequisite[] @relation("CourseToPreRequisite")
+  preRequisiteFor      CourseToPreRequisite[] @relation("PreRequisiteToCourse")
+  faculties            CourseFaculty[]
+  offeredCourses       OfferedCourse[]
+  studentEnrollCourses StudentEnrollCourse[]
 
   @@map("courses")
 }
@@ -272,6 +275,22 @@ model StudentSemesterRegistrationCourse {
   @@map("student_semesterer_registrations")
 }
 
+model StudentEnrollCourse {
+  id                 String                     @id @default(uuid())
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+  studentId          String
+  student            Student                    @relation(fields: [studentId], references: [id])
+  courseId           String
+  course             Course                     @relation(fields: [courseId], references: [id])
+  academicSemesterId String
+  academicSemester   AcademicSemester           @relation(fields: [academicSemesterId], references: [id])
+  grade              String?
+  point              Float?                     @default(0)
+  totalMarks         Int?                       @default(0)
+  status             StudentErolledCourseStatus @default(ONGOING)
+}
+
 enum SemesterRegistrationStatus {
   UPCOMING
   ONGOING
@@ -286,4 +305,10 @@ enum WeekDays {
   WEDNESSDAY
   THURSDAY
   FRIDAY
+}
+
+enum StudentErolledCourseStatus {
+  ONGOING
+  COMPLETED
+  WITHDRAWN
 }
