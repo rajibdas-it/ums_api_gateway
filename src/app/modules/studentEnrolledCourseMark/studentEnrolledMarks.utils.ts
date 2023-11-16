@@ -37,6 +37,8 @@ const getGradeFromMarks = (marks: number) => {
   return result;
 };
 
-export const studentGrade = {
+const calculateCGPAandGrade = (payload: any) => {};
+
+export const studentEnrollCourseMarkUtils = {
   getGradeFromMarks,
 };

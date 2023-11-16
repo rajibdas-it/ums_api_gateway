@@ -12,7 +12,7 @@ import {
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
 import prisma from '../../../shared/prisma';
-import { studentGrade } from './studentEnrolledMarks.utils';
+import { studentEnrollCourseMarkUtils } from './studentEnrolledMarks.utils';
 
 const createStudentEnrolledCourseDefaultMark = async (
   prismaClient: Omit<
@@ -94,7 +94,7 @@ const updateStudentMarks = async (payload: any) => {
     );
   }
 
-  const gradeResult = studentGrade.getGradeFromMarks(marks);
+  const gradeResult = studentEnrollCourseMarkUtils.getGradeFromMarks(marks);
 
   const updateMarks = await prisma.studentEnrolledCourseMark.update({
     where: {
@@ -149,7 +149,7 @@ const updateFinalMarks = async (paylaod: any) => {
 
   const totalmark = Math.ceil(midTermMark * 0.4) + Math.ceil(finalMarks * 0.6);
 
-  const finalResult = studentGrade.getGradeFromMarks(totalmark);
+  const finalResult = studentEnrollCourseMarkUtils.getGradeFromMarks(totalmark);
   const updateMarks = await prisma.studentEnrollCourse.updateMany({
     where: {
       student: {
@@ -169,7 +169,16 @@ const updateFinalMarks = async (paylaod: any) => {
       status: StudentErolledCourseStatus.COMPLETED,
     },
   });
-  console.log(updateMarks);
+
+  const grades = await prisma.studentEnrollCourse.findMany({
+    where: {
+      student: {
+        id: studentId,
+      },
+      status: StudentErolledCourseStatus.COMPLETED,
+    },
+  });
+  console.log(grades);
 };
 
 export const studentEnrolledCourseMarkService = {
