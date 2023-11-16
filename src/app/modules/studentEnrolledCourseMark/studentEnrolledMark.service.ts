@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ExamType, PrismaClient } from '@prisma/client';
 import {
@@ -58,6 +59,11 @@ const createStudentEnrolledCourseDefaultMark = async (
   }
 };
 
+const updateStudentMarks = async (payload: any) => {
+  console.log(payload);
+};
+
 export const studentEnrolledCourseMarkService = {
   createStudentEnrolledCourseDefaultMark,
+  updateStudentMarks,
 };
