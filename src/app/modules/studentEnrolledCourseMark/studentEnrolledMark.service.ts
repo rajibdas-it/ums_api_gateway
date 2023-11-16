@@ -169,6 +169,7 @@ const updateFinalMarks = async (paylaod: any) => {
       status: StudentErolledCourseStatus.COMPLETED,
     },
   });
+  console.log(updateMarks);
 
   const grades = await prisma.studentEnrollCourse.findMany({
     where: {
