@@ -1,9 +1,10 @@
 /* eslint-disable prefer-const */
 import { createClient } from 'redis';
+import { config } from '../config';
 import { errorLogger, infoLogger } from './logger';
 
 let redisClient = createClient({
-  url: 'redis://localhost:6379',
+  url: config.redis.url,
 });
 
 redisClient.on('error', err => errorLogger.error('RedisError', err));
