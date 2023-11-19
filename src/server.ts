@@ -2,15 +2,12 @@ import { Server } from 'http';
 import app from './app';
 import { config } from './config';
 import { errorLogger, infoLogger } from './shared/logger';
+import { RedisClient } from './shared/redis';
 
 let server: Server;
 
-// process.on('uncaughtException', error => {
-//   errorLogger.error('uncaught exception is dectected', error);
-//   process.exit(1);
-// });
-
-async function dbConnect() {
+async function apiGatewasyServer() {
+  await RedisClient.connect();
   server = app.listen(config.port, () => {
     infoLogger.info(`Server Running On Port ${config.port}`);
   });
@@ -39,16 +36,5 @@ async function dbConnect() {
       server.close();
     }
   });
-
-  // process.on('unhandledRejection', error => {
-  //   if (server) {
-  //     server.close(() => {
-  //       errorLogger.error(error);
-  //       process.exit(1);
-  //     });
-  //   } else {
-  //     process.exit(1);
-  //   }
-  // });
 }
-dbConnect();
+apiGatewasyServer();

@@ -3,7 +3,6 @@ import cors from 'cors';
 import express, { Application, NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
-import { ums_routes } from './app/routes';
 
 const app: Application = express();
 
@@ -14,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 
 //console.log(app.get('env'))
 //console.log(process.env)
-app.use('/api/v1/', ums_routes);
+// app.use('/api/v1/', ums_routes);
 
 //unhandle rejection testing purpose
 
