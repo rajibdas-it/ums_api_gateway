@@ -13,6 +13,10 @@ const envVariableZodSchema = z.object({
   REDIS_URL: z.string(),
   AUTH_SERVICE_URL: z.string(),
   CORE_SERVICE_URL: z.string(),
+  ACCESS_TOKEN: z.string(),
+  ACCESS_TOKEN_EXPIRES_IN: z.string(),
+  REFRESH_TOKEN: z.string(),
+  REFRESH_TOKEN_EXPIRES_IN: z.string(),
 });
 
 const envVariable = envVariableZodSchema.parse(process.env);
@@ -20,6 +24,12 @@ const envVariable = envVariableZodSchema.parse(process.env);
 export const config = {
   node_env: envVariable.NODE_ENV,
   port: envVariable.PORT,
+  jwt: {
+    access_token: process.env.ACCESS_TOKEN,
+    access_token_expires_in: process.env.ACCESS_TOKEN_EXPIRES_IN,
+    refresh_token: process.env.REFRESH_TOKEN,
+    refresh_token_expires_in: process.env.REFRESH_TOKEN_EXPIRES_IN,
+  },
   redis: {
     url: envVariable.REDIS_URL,
   },
