@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IGenericErrorMessages } from './ErrorMessages';
 
 export type IGenericErrorResponse = {
@@ -6,11 +7,14 @@ export type IGenericErrorResponse = {
   errorMessage: IGenericErrorMessages[];
 };
 
-export type IGenericResponse<T> = {
-  meta: {
+export type IGenericResponse = {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  meta?: {
     page: number;
     limit: number;
     total: number;
   };
-  data: T;
+  data?: any;
 };

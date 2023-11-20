@@ -9,9 +9,10 @@ const createAcademicSemester = catchAsync(
     sendResponse(res, result);
   },
 );
+
 const getAllAcademicSemester = catchAsync(
   async (req: Request, res: Response) => {
-    const result = await academicSemesterService.createAcademicSemester(req);
+    const result = await academicSemesterService.getAllAcademicSemester(req);
     sendResponse(res, result);
   },
 );
