@@ -37,7 +37,40 @@ const getAllAcademicSemester = async (
   );
   return response;
 };
+
+const getSingleAcademicSemester = async (
+  req: Request,
+): Promise<IGenericResponse> => {
+  const id = req.params.id;
+  const response: IGenericResponse = await coreService.get(
+    `/academic-semester/${id}`,
+    {
+      headers: {
+        Authorization: req.headers.authorization,
+      },
+    },
+  );
+  return response;
+};
+
+const updateAcademicSemester = async (
+  req: Request,
+): Promise<IGenericResponse> => {
+  const id = req.params.id;
+  const response: IGenericResponse = await coreService.patch(
+    `/academic-semester/update-semester/${id}`,
+    req.body,
+    {
+      headers: {
+        Authorization: req.headers.authorization,
+      },
+    },
+  );
+  return response;
+};
 export const academicSemesterService = {
   createAcademicSemester,
   getAllAcademicSemester,
+  getSingleAcademicSemester,
+  updateAcademicSemester,
 };

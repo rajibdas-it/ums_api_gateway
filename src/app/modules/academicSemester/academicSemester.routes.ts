@@ -16,4 +16,16 @@ router.get(
   academicSemesterController.getAllAcademicSemester,
 );
 
+router.get(
+  '/:id',
+  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
+  academicSemesterController.getSingleAcademicSemester,
+);
+
+router.patch(
+  '/update-semester/:id',
+  auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
+  academicSemesterController.updateAcademicSemester,
+);
+
 export const academicSemesterRoutes = router;
