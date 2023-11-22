@@ -28,4 +28,10 @@ router.patch(
   academicSemesterController.updateAcademicSemester,
 );
 
+router.delete(
+  '/delete-academic-semester/:id',
+  auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
+  academicSemesterController.deleteAcademicSemester,
+);
+
 export const academicSemesterRoutes = router;

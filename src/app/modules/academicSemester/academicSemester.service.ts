@@ -68,9 +68,26 @@ const updateAcademicSemester = async (
   );
   return response;
 };
+
+const deleteAcademicSemester = async (
+  req: Request,
+): Promise<IGenericResponse> => {
+  const id = req.params.id;
+  const response: IGenericResponse = await coreService.delete(
+    `/academic-semester/delete-semester/${id}`,
+    {
+      headers: {
+        Authorization: req.headers.authorization,
+      },
+    },
+  );
+  return response;
+};
+
 export const academicSemesterService = {
   createAcademicSemester,
   getAllAcademicSemester,
   getSingleAcademicSemester,
   updateAcademicSemester,
+  deleteAcademicSemester,
 };
